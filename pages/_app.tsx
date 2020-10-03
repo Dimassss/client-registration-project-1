@@ -1,5 +1,6 @@
 import { CssBaseline } from "@material-ui/core";
 import React from "react";
+import MainLayout from "../layouts/MainLayout";
 
 
 function MyApp({Component, pageProps}){
@@ -13,8 +14,9 @@ function MyApp({Component, pageProps}){
 
     return (
         <React.Fragment>
-            <CssBaseline />
-            <Component {...pageProps} />
+            <MainLayout>
+                <Component {...pageProps} />
+            </MainLayout>
         </React.Fragment>
     );
 }
