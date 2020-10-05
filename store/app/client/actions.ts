@@ -2,11 +2,11 @@ import { ClientInterface } from "../../../abstractions/interface/model/Client";
 import Client from "../../../assets/model/Client";
 import { ACTION_TYPE } from "./reducer";
 
-export const update = (clients: ClientInterface[]) => {
+export const setClient = (client: ClientInterface) => {
     return {
-        type: ACTION_TYPE.UPDATE,
-        payload: {clients: clients.map(c => new Client(c))}
+        type: ACTION_TYPE.SET_CLIENT,
+        payload: {client: client ? new Client(client) : null}
     }
 }
 
-export default {update};
+export default {setClient};

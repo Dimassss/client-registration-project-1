@@ -1,6 +1,4 @@
-import { Console } from "console";
 import { ClientInterface } from "../../../abstractions/interface/model/Client";
-import NoSuchActionTypeException from "../../../assets/log/exception/store/NoSuchActionTypeException";
 
 const actionTypePrefix = 'TABLE/CLIENTS';
 export const ACTION_TYPE = {
@@ -32,6 +30,5 @@ export default (state: ClientInterface[] = [], action) => {
     const f = cases[action.type];
     
     if(f) return f(state, action.payload);
-    else if(action.type.toString().match(/@@redux/) != null) return state
-    else throw new NoSuchActionTypeException({state, action, msg: 'in ./store/table/clients'});
+    return state;
 }

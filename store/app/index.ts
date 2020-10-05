@@ -1,13 +1,10 @@
 import { combineReducers } from "redux";
-import table from './table';
-import app from './app';
+import client from './client';
 
 export const reducer = combineReducers({
-    table: table.reducer,
-    app: app.reducer
+    client: client.reducer
 });
 export const actions = {
-    table: table.actions,
-    app: app.actions
+    client: client.actions
 }
 export default {reducer, actions};

@@ -1,6 +1,11 @@
 import { Button, createStyles, FormControl, FormControlLabel, FormLabel, Grid, InputLabel, LinearProgress, makeStyles, MenuItem, Radio, RadioGroup, Select, TextField } from "@material-ui/core";
 import React, { useState } from "react";
+import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
+import gender from "../abstractions/type/model/gender";
+import loyaltyProgram from "../abstractions/type/model/loyaltyProgram";
+import { ClientInterface } from "../abstractions/interface/model/Client";
+import {actions} from '../store';
 
 const useStyle = makeStyles(theme => createStyles({
   form: {
@@ -23,15 +28,12 @@ export function validateUser(user){
 }
 
 export default function BasicTextFields() {
+  const client = useSelector(state => state.app.client);
+  const dispatch = useDispatch();
   const router = useRouter();
   const classes = useStyle();
-  const [user, setUser] = useState({
-    firstName: '',
-    lastName: '',
-    gender: 'other',
-    loyaltyProgram: 'none',
-    cardNumber: ''
-  });
+  const setClient = (newClient: ClientInterface) => dispatch(actions.app.client.setClient(newClient));
+  const addToClients = (newClient: ClientInterface) => dispatch(actions.table.clients.update([{...newClient, id: Math.round(Math.random()*100000)}]));
   const [open, setOpen] = React.useState(false);
   const [loadingState, setLoadingState] = React.useState(false);
   const [errorText, setErrorText] = useState({
@@ -40,22 +42,43 @@ export default function BasicTextFields() {
     cardNumber: false
   });
 
-  function validate(user){
-    const err = validateUser(user);
-
+  function validate(client){
+    const err = validateUser(client);
     setErrorText({...err});
-
     return !Object.values(err).reduce((a,b) => a || b, false);
   }
 
   async function submitForm(){
-    if(user.loyaltyProgram !== 'card') user.cardNumber = '';
-    if(validate(user)){
+    if(client.loyaltyProgram !== 'card') client.cardNumber = '';
+
+    if(validate(client)){
       await setLoadingState(true);
-      setTimeout(() => router.push('/clients'), 1000);
-      console.log(user);
+      addToClients(client);
+      setClient(null);
+      router.push('/clients');
     }
   }
+
+  const handler = {
+    field: {
+      firstName(name: string){
+        setClient(Object.assign(client, {firstName: name}));
+      },
+      lastName(name: string){
+        setClient(Object.assign(client, {lastName: name}));
+      },
+      gender(gender: gender){
+        setClient(Object.assign(client, {gender}));
+      },
+      loyaltyProgram(loyaltyProgram: loyaltyProgram){
+        setClient(Object.assign(client, {loyaltyProgram}));
+      },
+      cardNumber(cardNumber: string){
+        if(cardNumber.length > 16) return;
+        setClient(Object.assign(client, {cardNumber}));
+      }
+    }
+  };
 
   return (<>
     {loadingState && <LinearProgress/>}
@@ -72,8 +95,8 @@ export default function BasicTextFields() {
               <TextField 
                 fullWidth 
                 label="Имя" 
-                onChange={e => setUser({...user, firstName: e.target.value})}
-                value={user.firstName}
+                onChange={e => handler.field.firstName(e.target.value)}
+                value={client.firstName}
                 error={errorText.firstName}
               />
             </Grid>
@@ -82,14 +105,21 @@ export default function BasicTextFields() {
                 fullWidth 
                 label="Фамилия"
                 error={errorText.lastName} 
-                onChange={e => setUser({...user, lastName: e.target.value})} 
-                value={user.lastName}
+                onChange={e => handler.field.lastName(e.target.value)} 
+                value={client.lastName}
               />
             </Grid>
             <Grid item xs={12} sm={6} className={classes.field}>
               <FormControl component="fieldset">
                 <FormLabel component="legend">Пол</FormLabel>
-                <RadioGroup aria-label="gender" name="gender" value={user.gender} onChange={e => setUser({...user, gender: e.target.value})}>
+                <RadioGroup 
+                  aria-label="gender" 
+                  name="gender" 
+                  value={client.gender} 
+                  onChange={
+                    e => handler.field.gender(e.target.value as gender)
+                  }
+                >
                   <FormControlLabel value="female" control={<Radio />} label="Female"/>
                   <FormControlLabel value="male" control={<Radio />} label="Male"/>
                   <FormControlLabel value="other" control={<Radio />} label="Other"/>
@@ -105,24 +135,21 @@ export default function BasicTextFields() {
                   open={open}
                   onClose={e => setOpen(false)}
                   onOpen={e => setOpen(true)}
-                  value={user.loyaltyProgram}
-                  onChange={e => setUser({...user, loyaltyProgram: e.target.value.toString()})}
+                  value={client.loyaltyProgram}
+                  onChange={e => handler.field.loyaltyProgram(e.target.value.toString() as loyaltyProgram)}
                 >
                   <MenuItem value="none">недоступна</MenuItem>
                   <MenuItem value="card">пластиковая карта</MenuItem>
                   <MenuItem value="mobile">мобильное приложение</MenuItem>
                 </Select>
               </FormControl>
-              {user.loyaltyProgram == 'card' &&
+              {client.loyaltyProgram == 'card' &&
                 <TextField 
                   fullWidth 
                   label="Номер карты" 
-                  value={user.cardNumber}
+                  value={client.cardNumber}
                   error={errorText.cardNumber}
-                  onChange={e => {
-                    if(e.target.value.length > 16) return;
-                    setUser({...user, cardNumber: e.target.value});
-                  }} 
+                  onChange={e => handler.field.cardNumber(e.target.value)} 
                 />
               }
             </Grid>

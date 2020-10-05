@@ -1,8 +1,9 @@
 import { useMemo } from "react";
+import { ClientInterface } from "../../abstractions/interface/model/Client";
 import BaseTable from "./BaseTable";
 
 type Props = {
-    clients: {id: number, firstName: string, lastName: string, registrationTime: string}[]
+    clients: ClientInterface[]
 }
 
 export default function ClientTable({clients}: Props){
@@ -10,7 +11,7 @@ export default function ClientTable({clients}: Props){
         return clients.map(client => ({
             id: () => (client.id),
             fullName: () => `${client.firstName} ${client.lastName}`,
-            createDate: () => client.registrationTime.toString()
+            createDate: () => new Date(+client.createDate).toLocaleString()
         }));
     }, [clients]);
 
