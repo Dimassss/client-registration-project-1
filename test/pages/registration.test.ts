@@ -1,4 +1,5 @@
 import { validateUser } from '../../pages/registration';
+import combine from '../test-tools/generator/combine/combine';
 
 test('validateUser() from /registration', () => {
     const firstNames = [null, '', 'a', 'aa', 'aaa'];
@@ -7,23 +8,7 @@ test('validateUser() from /registration', () => {
     const loyaltyPrograms = ['none', 'card', 'mobile'];
     const cardNumbers = [null, '', '1', 'a', '1111111111111111', '111111111111111a', '11111111111111111', '1111111111111111a'];
 
-    function iterator(f, ...arrs){
-        function loop(arr, f){
-            arr.map(v => f(v));
-        }
-
-        let l = [f];
-        let i = 0;
-        arrs.map(arr => {
-            const j = parseInt(i + 'v');
-            i++;
-            l[i] = (v) => loop(arr, val => l[j]([val, ...v]));
-        });
-
-        l[i]([]);
-    }
-
-    iterator((v) => {
+    combine((v) => {
         const user = {
             firstName: v[0],
             lastName: v[1],

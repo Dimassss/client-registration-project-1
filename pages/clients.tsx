@@ -1,3 +1,4 @@
+import { useSelector } from 'react-redux';
 import { Button, createStyles, Grid, makeStyles } from "@material-ui/core";
 import React from "react";
 import Link from 'next/link';
@@ -14,6 +15,7 @@ const useStyles = makeStyles(theme => createStyles({
 
 export default function BasicTextFields() {
   const classes = useStyles();
+  const clients = useSelector(state => state.table.clients);
 
   return (<Grid container>
     <Grid item xs={12} className={classes.btnContainer}>
@@ -29,14 +31,7 @@ export default function BasicTextFields() {
       </Link>
     </Grid>
     <Grid item xs={12}>
-      <ClientTable clients={[
-        {id: 1, firstName: 'dfasdf', lastName: 'ghdfg', registrationTime: '7237247'},
-        {id: 2, firstName: 'gjfgggfd', lastName: 'jhxcvnfyt', registrationTime: '6234667'},
-        {id: 3, firstName: ',hgj,mh', lastName: 'sfhsdjajs', registrationTime: '46236'},
-        {id: 4, firstName: 'gherhsf', lastName: 'lifghmns', registrationTime: '45234'},
-        {id: 5, firstName: 'd4234fasdf', lastName: 'ghdfg', registrationTime: '7237247'},
-        {id: 6, firstName: 'ghehdsffrhsf', lastName: 'lifghhmns', registrationTime: '45234'}
-      ]}/>
+      <ClientTable clients={clients}/>
     </Grid>
   </Grid>);
 }

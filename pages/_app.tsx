@@ -1,7 +1,10 @@
-import { CssBaseline } from "@material-ui/core";
+import { Provider } from 'react-redux';
 import React from "react";
 import MainLayout from "../layouts/MainLayout";
+import { createStore } from 'redux';
+import storeRoot from '../store';
 
+const store = createStore(storeRoot.reducer);
 
 function MyApp({Component, pageProps}){
     React.useEffect(() => {
@@ -13,11 +16,11 @@ function MyApp({Component, pageProps}){
     }, []);
 
     return (
-        <React.Fragment>
+        <Provider store={store}>
             <MainLayout>
                 <Component {...pageProps} />
             </MainLayout>
-        </React.Fragment>
+        </Provider>
     );
 }
 
