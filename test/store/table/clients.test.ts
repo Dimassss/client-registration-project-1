@@ -8,11 +8,11 @@ import { ACTION_TYPE } from '../../../store/table/clients/reducer';
 import combine from '../../test-tools/generator/combine/combine';
 
 
-const firstNames = [null, '', 'a', 'aa', 'aaa'];
+const firstNames = [null, '', 'aa', 'aaa'];
 const lastNames = firstNames;
 const genders = ['female', 'male', 'other'];
 const loyaltyPrograms = ['none', 'card', 'mobile'];
-const cardNumbers = [null, '', '1', 'a', '1111111111111111', '111111111111111a', '11111111111111111', '1111111111111111a'];
+const cardNumbers = [null, '', '1', '1111111111111111', '111111111111111a', '11111111111111111'];
 const allClientsCombinations = [];
 
 combine((arr: [string, string, gender, loyaltyProgram, string]) => {
@@ -34,7 +34,7 @@ for(let len = Math.round(count/3); len < Math.round(count*2/3); len++){
     for(let i = 0; i < 20; i++){
         r.push(_.sampleSize(allClientsCombinations, len));
     }
-    subArraysOfClients.push(r);
+    subArraysOfClients.push(...r);
 }
 
 expect.extend({
@@ -60,7 +60,7 @@ declare global {
 
 test('store/table/clients/action', () => {
     const actions = clients.actions;
-    const testUpdatedAction = (arr: ClientInterface) => actions.update(arr);
+    const testUpdatedAction = (arr: ClientInterface[]) => actions.update(arr);
     
     subArraysOfClients.forEach(arr => {
         expect(testUpdatedAction(arr)).toEqual({type: ACTION_TYPE.UPDATE, payload: {clients: arr}});
@@ -70,11 +70,17 @@ test('store/table/clients/action', () => {
 test('store/table/clients/reducer/UPDATE', () => {
     const reducer = clients.reducer;
     const actions = clients.actions;
-    let state = [];
+    let state = {clients: [], isLoading: false};
     
     subArraysOfClients.forEach((arr, i) => {
         let newState = reducer(state, actions.update(arr));
-        expect(newState).isEqualSet([...state, ...arr]);
+        let mustBe = {...state};
+        mustBe.clients = [...state.clients, ...arr];
+        
+        expect(newState.clients).isEqualSet(mustBe.clients);
+        newState.clients = mustBe.clients = [];
+        expect(newState).toEqual(mustBe);
+
         state = newState;
     });
 });

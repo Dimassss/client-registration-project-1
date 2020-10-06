@@ -32,7 +32,7 @@ test('/store/app/client/actions/SET_CLIENT', () => {
         expect(action(client)).toEqual({
             type: ACTION_TYPE.SET_CLIENT,
             payload: {
-                client: client
+                client: client ? client : null
             }
         });
     });
@@ -44,10 +44,18 @@ test('/store/app/client/reducer', () => {
     const setClient = clientStore.actions.setClient;
     const allClients = allClientsCombinations;
 
-    allClients.forEach(state => {
+    allClients.forEach(clientToState => {
+        const state = {client: clientToState, random: def.random()}
+
         allClients.forEach(client => {
-            expect(reducer(state, setClient(client)))
-                .toEqual(client ? client : def.client);
+            const mustBe = reducer(state, setClient(client));
+            const createDate = mustBe.client.createDate;
+            const obj = {client: {}, random: []};
+
+            obj.client = Object.assign(client ? client : def.client(), {createDate});
+            obj.random = def.random();
+
+            expect(mustBe).toEqual(obj);
         }); 
     });
 });

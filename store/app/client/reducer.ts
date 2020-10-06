@@ -30,9 +30,9 @@ export const ACTION_TYPE = {
 };
 
 export const cases = {
-    [ACTION_TYPE.SET_CLIENT](state: ClientInterface, {client}: {client: ClientInterface} ){
+    [ACTION_TYPE.SET_CLIENT](state: State, {client}: {client: ClientInterface} ){
         if(!client) client = def.client();
-        return {...state, client};
+        return Object.assign(state, {client});
     },
     [ACTION_TYPE.SAVE_CLIENT.SUCCESS](state, {data}){
         return {...state, random: data}
