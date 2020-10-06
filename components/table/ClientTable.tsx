@@ -3,10 +3,11 @@ import { ClientInterface } from "../../abstractions/interface/model/Client";
 import BaseTable from "./BaseTable";
 
 type Props = {
-    clients: ClientInterface[]
+    clients: ClientInterface[],
+    onLastPage: (data) => void
 }
 
-export default function ClientTable({clients}: Props){
+export default function ClientTable({clients, onLastPage}: Props){
     const records = useMemo(() => {
         return clients.map(client => ({
             id: () => (client.id),
@@ -24,5 +25,7 @@ export default function ClientTable({clients}: Props){
             title: 'Дата регистрации',
             accessor: 'createDate'
         }
-    ]}/>;
+    ]}
+    onLastPage={onLastPage}
+    />;
 }

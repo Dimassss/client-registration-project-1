@@ -3,20 +3,27 @@ import { useState } from "react";
 
 type Props = {
     records: {[propName: string]: () => (string | number), id: () => number}[],
-    header: {title: string, accessor: string}[]
+    header: {title: string, accessor: string}[],
+    onLastPage: (data) => void
 }
 
-export default function BaseTable({records, header}: Props){
+export default function BaseTable({records, header, onLastPage}: Props){
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
+    if(records.length <= rowsPerPage) onLastPage({rowsPerPage});
+
     const handleChangePage = (e: unknown, newPage: number) => {
         setPage(newPage);
+        if(newPage >= records.length/rowsPerPage-1){
+            onLastPage({rowsPerPage});
+        }
     };
 
     const handleChangeRowsPerPage = (e) => {
         setRowsPerPage(+e.target.value);
         setPage(0);
+        if(records.length <= rowsPerPage) onLastPage({rowsPerPage});
     }
 
     return (<><TableContainer>

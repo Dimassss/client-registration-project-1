@@ -7,4 +7,7 @@ export const reducer = combineReducers({
 export const actions = {
     clients: clients.actions
 }
-export default {reducer, actions};
+export const actionsAsync = {
+    clients: clients.actionsAsync
+}
+export default {reducer, actions, actionsAsync};

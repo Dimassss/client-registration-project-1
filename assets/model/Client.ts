@@ -25,7 +25,7 @@ export default class Client extends Model implements ClientInterface{
     validate(){
         return (this.firstName && this.firstName.length > 2) &&
                 (this.lastName && this.lastName.length > 2) &&
-                (this.loyaltyProgram != 'card' || (this.cardNumber && this.cardNumber.match(/\d{16/))) &&
+                (this.loyaltyProgram != 'card' || (this.cardNumber && this.cardNumber.match(/\d{16}/))) &&
                 (this.createDate && typeof this.createDate == 'number');
     }
 }

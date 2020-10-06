@@ -10,4 +10,8 @@ export const actions = {
     table: table.actions,
     app: app.actions
 }
-export default {reducer, actions};
+export const actionsAsync = {
+    table: table.actionsAsync,
+    app: app.actionsAsync
+}
+export default {reducer, actions, actionsAsync};

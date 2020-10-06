@@ -6,6 +6,8 @@ import gender from "../abstractions/type/model/gender";
 import loyaltyProgram from "../abstractions/type/model/loyaltyProgram";
 import { ClientInterface } from "../abstractions/interface/model/Client";
 import {actions} from '../store';
+import {actionsAsync} from "../store/";
+import Client from "../assets/model/Client";
 
 const useStyle = makeStyles(theme => createStyles({
   form: {
@@ -28,12 +30,14 @@ export function validateUser(user){
 }
 
 export default function BasicTextFields() {
-  const client = useSelector(state => state.app.client);
+  const state = useSelector(state => state.app.client);
   const dispatch = useDispatch();
   const router = useRouter();
   const classes = useStyle();
   const setClient = (newClient: ClientInterface) => dispatch(actions.app.client.setClient(newClient));
   const addToClients = (newClient: ClientInterface) => dispatch(actions.table.clients.update([{...newClient, id: Math.round(Math.random()*100000)}]));
+  const saveClientToDB = (client: Client) => actionsAsync.app.client.saveClient(dispatch, client);
+  const loadRandomData = () => actionsAsync.app.client.loadRandomData(dispatch);
   const [open, setOpen] = React.useState(false);
   const [loadingState, setLoadingState] = React.useState(false);
   const [errorText, setErrorText] = useState({
@@ -42,44 +46,43 @@ export default function BasicTextFields() {
     cardNumber: false
   });
 
-  function validate(client){
-    const err = validateUser(client);
-    setErrorText({...err});
-    return !Object.values(err).reduce((a,b) => a || b, false);
-  }
-
   async function submitForm(){
-    if(client.loyaltyProgram !== 'card') client.cardNumber = '';
+    if(state.client.loyaltyProgram !== 'card') state.client.cardNumber = '';
 
-    if(validate(client)){
+    if(state.client.validate()){
       await setLoadingState(true);
-      addToClients(client);
+      addToClients(state.client);
+      saveClientToDB(state.client);
       setClient(null);
+      loadRandomData();
       router.push('/clients');
+    }else{
+      setErrorText(validateUser(state.client));
     }
+    
   }
 
   const handler = {
     field: {
       firstName(name: string){
-        setClient(Object.assign(client, {firstName: name}));
+        setClient(Object.assign(state.client, {firstName: name}));
       },
       lastName(name: string){
-        setClient(Object.assign(client, {lastName: name}));
+        setClient(Object.assign(state.client, {lastName: name}));
       },
       gender(gender: gender){
-        setClient(Object.assign(client, {gender}));
+        setClient(Object.assign(state.client, {gender}));
       },
       loyaltyProgram(loyaltyProgram: loyaltyProgram){
-        setClient(Object.assign(client, {loyaltyProgram}));
+        setClient(Object.assign(state.client, {loyaltyProgram}));
       },
       cardNumber(cardNumber: string){
         if(cardNumber.length > 16) return;
-        setClient(Object.assign(client, {cardNumber}));
+        setClient(Object.assign(state.client, {cardNumber}));
       }
     }
   };
-
+  
   return (<>
     {loadingState && <LinearProgress/>}
     <Grid
@@ -96,7 +99,7 @@ export default function BasicTextFields() {
                 fullWidth 
                 label="Имя" 
                 onChange={e => handler.field.firstName(e.target.value)}
-                value={client.firstName}
+                value={state.client.firstName}
                 error={errorText.firstName}
               />
             </Grid>
@@ -106,7 +109,7 @@ export default function BasicTextFields() {
                 label="Фамилия"
                 error={errorText.lastName} 
                 onChange={e => handler.field.lastName(e.target.value)} 
-                value={client.lastName}
+                value={state.client.lastName}
               />
             </Grid>
             <Grid item xs={12} sm={6} className={classes.field}>
@@ -115,7 +118,7 @@ export default function BasicTextFields() {
                 <RadioGroup 
                   aria-label="gender" 
                   name="gender" 
-                  value={client.gender} 
+                  value={state.client.gender} 
                   onChange={
                     e => handler.field.gender(e.target.value as gender)
                   }
@@ -135,7 +138,7 @@ export default function BasicTextFields() {
                   open={open}
                   onClose={e => setOpen(false)}
                   onOpen={e => setOpen(true)}
-                  value={client.loyaltyProgram}
+                  value={state.client.loyaltyProgram}
                   onChange={e => handler.field.loyaltyProgram(e.target.value.toString() as loyaltyProgram)}
                 >
                   <MenuItem value="none">недоступна</MenuItem>
@@ -143,11 +146,11 @@ export default function BasicTextFields() {
                   <MenuItem value="mobile">мобильное приложение</MenuItem>
                 </Select>
               </FormControl>
-              {client.loyaltyProgram == 'card' &&
+              {state.client.loyaltyProgram == 'card' &&
                 <TextField 
                   fullWidth 
                   label="Номер карты" 
-                  value={client.cardNumber}
+                  value={state.client.cardNumber}
                   error={errorText.cardNumber}
                   onChange={e => handler.field.cardNumber(e.target.value)} 
                 />
@@ -155,7 +158,7 @@ export default function BasicTextFields() {
             </Grid>
             <Grid item xs={12}>
               <Button variant="contained" color="primary" onClick={() => submitForm()}>
-                Зарегистрироваться
+                Сохранить
               </Button>
             </Grid>
           </Grid>
