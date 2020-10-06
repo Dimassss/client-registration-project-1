@@ -49,9 +49,11 @@ export const cases = {
     }
 };
 
-export default (state: State = {clients: [], isLoading: false}, action) => {
+const reducer = (state: State = {clients: [], isLoading: false}, action) => {
     const f = cases[action.type];
     
     if(f) return f(state, action.payload);
     return state;
 }
+
+export default reducer;

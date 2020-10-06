@@ -3,6 +3,8 @@ import React from "react";
 import MainLayout from "../layouts/MainLayout";
 import { createStore } from 'redux';
 import storeRoot from '../store';
+import Head from 'next/head';
+import { CssBaseline, NoSsr, ServerStyleSheets } from '@material-ui/core';
 
 const store = createStore(storeRoot.reducer);
 
@@ -17,8 +19,14 @@ function MyApp({Component, pageProps}){
 
     return (
         <Provider store={store}>
+            <Head>
+                <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+            </Head>
             <MainLayout>
-                <Component {...pageProps} />
+                <CssBaseline/>
+                <NoSsr>
+                    <Component {...pageProps} />
+                </NoSsr>
             </MainLayout>
         </Provider>
     );

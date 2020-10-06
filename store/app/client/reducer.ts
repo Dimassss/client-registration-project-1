@@ -45,7 +45,7 @@ export const cases = {
     }
 };
 
-export default (state: State, action) => {
+const reducer = (state: State, action) => {
     if(!state) state = {client: def.client(), random: []};
     else{
         if(!state.client) state.client = def.client();
@@ -56,3 +56,5 @@ export default (state: State, action) => {
     if(f) return f(state, action.payload);
     return state;
 }
+
+export default reducer;

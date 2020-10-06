@@ -5,6 +5,7 @@ import {useDispatch} from 'react-redux';
 import Link from 'next/link';
 import ClientTable from "../components/table/ClientTable";
 import { loadClients } from '../store/table/clients/actions.async';
+import Head from 'next/head';
 
 const useStyles = makeStyles(theme => createStyles({
   btnContainer: {
@@ -41,6 +42,9 @@ export default function BasicTextFields() {
   }, [])
 
   return (<Grid container>
+    <Head>
+        <title>Клиенты</title>
+    </Head>
     <Grid item xs={12} className={classes.btnContainer}>
       <Link href={'/registration'}>
         <Button 

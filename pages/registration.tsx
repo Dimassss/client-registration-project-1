@@ -8,6 +8,7 @@ import { ClientInterface } from "../abstractions/interface/model/Client";
 import {actions} from '../store';
 import {actionsAsync} from "../store/";
 import Client from "../assets/model/Client";
+import Head from 'next/head';
 
 const useStyle = makeStyles(theme => createStyles({
   form: {
@@ -88,6 +89,9 @@ export default function BasicTextFields() {
     <Grid
       container
     >
+      <Head>
+        <title>Регистрация клиента</title>
+      </Head>
       <Grid item xs={12}>
         <form 
           autoComplete="off" 

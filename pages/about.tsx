@@ -1,5 +1,6 @@
 import { Button, createStyles, Grid, makeStyles, Paper } from "@material-ui/core";
 import React from "react";
+import Head from 'next/head';
 
 const useStyles = makeStyles(theme => createStyles({
     paper: {
@@ -34,6 +35,9 @@ export default function BasicTextFields() {
         justify="center"
         alignItems="flex-start"
     >
+        <Head>
+            <title>Обо мне</title>
+        </Head>
         <Grid item xs={12}>
             <Paper className={classes.paper}>
                 All information about me you can get in LinkedIn or from my CV pdf file.
@@ -46,7 +50,7 @@ export default function BasicTextFields() {
                 justify="space-between"
                 className={classes.linkContainer}
             >   
-                {data.links.map((link, i) => (<Grid key={i} xs={12} sm={6} md={3} className={classes.link}>
+                {data.links.map((link, i) => (<Grid item key={i} xs={12} sm={6} md={3} className={classes.link}>
                     <Button 
                         variant="contained" 
                         color="primary" 
